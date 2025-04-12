@@ -28,6 +28,7 @@ public:
   std::vector<G4double> fPhotonPositionZ;
   std::vector<G4double> fPhotonKinetic;
   G4String fDecayChain;
+  G4int fPhotonGlobalTimeHis[5000];
 
   void reset()
   {
@@ -47,6 +48,7 @@ public:
     fPhotonPositionZ.clear();
     fPhotonKinetic.clear();
     fDecayChain = "";
+    memset(fPhotonGlobalTimeHis, 0, sizeof(fPhotonGlobalTimeHis));
   }
 
   ParticleInfo()
@@ -67,6 +69,7 @@ public:
     fPhotonPositionZ.clear();
     fDecayChain = "";
     fPhotonKinetic.clear();
+    memset(fPhotonGlobalTimeHis, 0, sizeof(fPhotonGlobalTimeHis));
   }
   ~ParticleInfo() {};
 };

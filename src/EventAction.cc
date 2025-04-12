@@ -62,10 +62,13 @@ void EventAction::EndOfEventAction(const G4Event *aEvent)
 
 void EventAction::Addinfo(G4double particleKinetic, G4double GlobalTime, G4double LocalTime, G4ThreeVector vpos)
 {
-  fParticleInfo.fPhotonEnergy.push_back(particleKinetic / eV);
-  fParticleInfo.fPhotonGlobalTime.push_back(GlobalTime / ns);
-  fParticleInfo.fPhotonLocalTime.push_back(LocalTime / ns);
-  fParticleInfo.fPhotonPositionX.push_back(vpos.x() / cm);
-  fParticleInfo.fPhotonPositionY.push_back(vpos.y() / cm);
-  fParticleInfo.fPhotonPositionZ.push_back(vpos.z() / cm);
+  // cost too much memory space to store information of every single photons
+  // fParticleInfo.fPhotonEnergy.push_back(particleKinetic / eV);
+  // fParticleInfo.fPhotonGlobalTime.push_back(GlobalTime / ns);
+  // fParticleInfo.fPhotonLocalTime.push_back(LocalTime / ns);
+  // fParticleInfo.fPhotonPositionX.push_back(vpos.x() / cm);
+  // fParticleInfo.fPhotonPositionY.push_back(vpos.y() / cm);
+  // fParticleInfo.fPhotonPositionZ.push_back(vpos.z() / cm);
+  if ((GlobalTime / ns) < 500)
+    fParticleInfo.fPhotonGlobalTimeHis[int(GlobalTime / ns / 0.1)]++;
 }
