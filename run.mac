@@ -1,0 +1,21 @@
+/run/initialize
+
+/gps/pos/type Point
+/gps/pos/centre 0 0 -15 cm
+/gps/direction 0 0 1
+
+/gps/particle mu-
+/gps/energy 3 GeV
+/run/beamOn 500
+
+/gps/particle pi-
+/gps/energy 3 GeV
+/run/beamOn 2000
+
+/gps/particle proton
+/gps/energy 2.2 GeV
+/run/beamOn 2000
+
+/gps/particle e-
+/gps/energy 3 GeV
+/run/beamOn 300
