@@ -1,6 +1,7 @@
 #include "SteppingAction.hh"
 
 #include "DetectorConstruction.hh"
+#include "EventAction.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 #include "G4Track.hh"
