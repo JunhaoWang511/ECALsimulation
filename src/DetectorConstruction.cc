@@ -28,7 +28,7 @@
 #include "globals.hh"
 
 DetectorConstruction::DetectorConstruction()
-    : G4VUserDetectorConstruction(){}
+    : G4VUserDetectorConstruction() {}
 
 DetectorConstruction::~DetectorConstruction() {}
 
@@ -99,11 +99,15 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     G4MaterialPropertiesTable *CrystalMPT = new G4MaterialPropertiesTable();
     CrystalMPT->AddProperty("RINDEX", photonEnergy, crystalRindex, nEntries);
     CrystalMPT->AddProperty("ABSLENGTH", photonEnergy, crystalAbsLen, nEntries);
-    CrystalMPT->AddProperty("FASTCOMPONENT", photonEnergy, crystalEmSpec, nEntries);
-    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD", 1880.0 / MeV);
+    CrystalMPT->AddProperty("FASTCOMPONENT", photonEnergy, crystalEmSpec, nEntries); // emission spectrum
+    CrystalMPT->AddProperty("SLOWCOMPONENT", photonEnergy, crystalEmSpec, nEntries);
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD", 1880.0 / MeV);     // absolute light yield
+    CrystalMPT->AddConstProperty("FASTSCINTILLATIONRISETIME", 1.13 * ns); // rise time
+    CrystalMPT->AddConstProperty("SLOWSCINTILLATIONRISETIME", 1.13 * ns);
+    CrystalMPT->AddConstProperty("FASTTIMECONSTANT", 6. * ns); // decay time
+    CrystalMPT->AddConstProperty("SLOWTIMECONSTANT", 30. * ns);
+    CrystalMPT->AddConstProperty("YIELDRATIO", 0.234); // Fast component yield ratio
     CrystalMPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
-    CrystalMPT->AddConstProperty("FASTTIMECONSTANT", 25. * ns);
-    CrystalMPT->AddConstProperty("YIELDRATIOL", 1.0);
     CsI->SetMaterialPropertiesTable(CrystalMPT);
 
     G4double ErefractiveIndex_air[2] = {0.4 * eV, 6.0 * eV};
@@ -133,8 +137,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                             0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
                             0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000};
     // refractive index of WLS (!undetermined!)
-    G4double wlsRindex[] = {1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 
-                            1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 
+    G4double wlsRindex[] = {1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6,
+                            1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6,
                             1.6, 1.6, 1.6};
     // material properties of WLS
     G4MaterialPropertiesTable *wlsMPT = new G4MaterialPropertiesTable();
