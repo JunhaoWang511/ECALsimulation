@@ -1,5 +1,5 @@
 #include "SteppingAction.hh"
-
+#include "TrackInformation.hh"
 #include "DetectorConstruction.hh"
 #include "EventAction.hh"
 #include "G4RunManager.hh"
@@ -45,12 +45,17 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
   G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
   G4VPhysicalVolume *postPhyVolume = postStepPoint->GetPhysicalVolume();
 
+  TrackInformation *trackInfo = (TrackInformation *)aTrack->GetUserInformation();
   // get outside of world volume
   if (!postPhyVolume)
   {
     // count for photons entering World
     if (aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
+    {
       fTrackingAction->GetEventAction()->IncEscaption();
+      trackInfo->SetTrackStatusFlag(escaped);
+      trackInfo->SetTrackTime(GlobalTime);
+    }
     return;
   }
 
@@ -74,6 +79,8 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
     if (postStepPoint->GetProcessDefinedStep()->GetProcessName() == "OpAbsorption")
     {
       fTrackingAction->GetEventAction()->IncAbsorption();
+      trackInfo->SetTrackStatusFlag(absorbed);
+      trackInfo->SetTrackTime(GlobalTime);
     }
 
     boundaryStatus = boundary->GetStatus();
@@ -85,6 +92,8 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
       case Absorption:
       {
         fTrackingAction->GetEventAction()->IncBoundaryAbsorption();
+        trackInfo->SetTrackStatusFlag(boundaryAbsorbed);
+        trackInfo->SetTrackTime(GlobalTime);
         break;
       }
       case Detection:
@@ -95,6 +104,8 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
         vposition = postStepPoint->GetPosition();
         fTrackingAction->GetEventAction()->IncDetection();
         fTrackingAction->GetEventAction()->Addinfo(particleKinetic, GlobalTime, LocalTime, vposition);
+        trackInfo->SetTrackStatusFlag(detected);
+        trackInfo->SetTrackTime(GlobalTime);
         break;
       }
       case NoRINDEX:

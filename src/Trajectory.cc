@@ -41,8 +41,7 @@ G4ThreadLocal G4Allocator<Trajectory> *TrajectoryAllocator = nullptr;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 Trajectory::Trajectory()
-    : G4Trajectory(), fWls(false), fDrawit(false),
-      fForceNoDraw(false), fForceDraw(false)
+    : G4Trajectory(), fWls(false), fDrawit(false)
 {
     fParticleDefinition = nullptr;
 }
@@ -79,7 +78,7 @@ void Trajectory::DrawTrajectory() const
     // Taken from G4VTrajectory and modified to select colours based on particle
     // type and to selectively eliminate drawing of certain trajectories.
 
-    if (!fForceDraw && (!fDrawit || fForceNoDraw))
+    if (!fDrawit)
         return;
 
     // If i_mode>=0, draws a trajectory as a polyline and, if i_mode!=0,

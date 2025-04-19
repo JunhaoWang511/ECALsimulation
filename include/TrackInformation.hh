@@ -23,54 +23,45 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef Trajectory_h
-#define Trajectory_h 1
-
-#include "G4Trajectory.hh"
-#include "G4Allocator.hh"
-#include "G4ios.hh"
+#include "G4VUserTrackInformation.hh"
 #include "globals.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4TrajectoryPoint.hh"
-#include "G4Track.hh"
-#include "G4Step.hh"
 
-class G4Polyline; // Forward declaration.
+#ifndef TrackInformation_h
+#define TrackInformation_h 1
 
-class Trajectory : public G4Trajectory
+enum TrackStatus
 {
-public:
-    Trajectory();
-    Trajectory(const G4Track *aTrack);
-    Trajectory(Trajectory &);
-    virtual ~Trajectory();
-
-    virtual void DrawTrajectory() const;
-
-    inline void *operator new(size_t);
-    inline void operator delete(void *);
-
-    void SetDrawTrajectory(G4bool b) { fDrawit = b; }
-    void WLS() { fWls = true; }
-
-private:
-    G4bool fWls;
-    G4bool fDrawit;
-    G4ParticleDefinition *fParticleDefinition;
+    active,
+    detected,
+    absorbed,
+    boundaryAbsorbed,
+    escaped
 };
 
-extern G4ThreadLocal G4Allocator<Trajectory> *TrajectoryAllocator;
+/*TrackStatus of optical photons at the end of its track:
+  active: still being tracked
+  detected: stopped by being detected in an APD
+  absorbed: stopped by being absorbed with G4OpAbsorbtion
+  boundaryAbsorbed: stopped by being aborbed with Absorption in G4OpBoundaryProcessStatus
+  escaped: stopped by being escaped from world volume
+*/
 
-inline void *Trajectory::operator new(size_t)
+class TrackInformation : public G4VUserTrackInformation
 {
-    if (!TrajectoryAllocator)
-        TrajectoryAllocator = new G4Allocator<Trajectory>;
-    return (void *)TrajectoryAllocator->MallocSingle();
-}
+public:
+    TrackInformation();
+    virtual ~TrackInformation();
 
-inline void Trajectory::operator delete(void *aTrajectory)
-{
-    TrajectoryAllocator->FreeSingle((Trajectory *)aTrajectory);
-}
+    // Sets the track status to s
+    void SetTrackStatusFlag(int s) { fStatus = s; }
+    int GetTrackStatus() const { return fStatus; }
+    // Global life time of an optical photon
+    void SetTrackTime(G4double time) { fTime = time; }
+    G4double GetTrackTime() { return fTime; }
+
+private:
+    int fStatus;
+    G4double fTime;
+};
 
 #endif
