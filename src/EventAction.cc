@@ -74,6 +74,8 @@ void EventAction::Addinfo(G4double particleKinetic, G4double GlobalTime, G4doubl
   // fParticleInfo.fPhotonPositionX.push_back(vpos.x() / cm);
   // fParticleInfo.fPhotonPositionY.push_back(vpos.y() / cm);
   // fParticleInfo.fPhotonPositionZ.push_back(vpos.z() / cm);
+  if ((particleKinetic / eV) < 10)
+    fParticleInfo.fPhotonEnergyHis[int(particleKinetic / eV / 0.01)]++;
   if ((GlobalTime / ns) < 500)
     fParticleInfo.fPhotonGlobalTimeHis[int(GlobalTime / ns / 0.1)]++;
 }

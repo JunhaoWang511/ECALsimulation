@@ -57,6 +57,7 @@ void HistoManager::book()
   // fNtuple->Branch("PhotonPositionX", &fParticleInfo.fPhotonPositionX);
   // fNtuple->Branch("PhotonPositionY", &fParticleInfo.fPhotonPositionY);
   // fNtuple->Branch("PhotonPositionZ", &fParticleInfo.fPhotonPositionZ);
+  fNtuple->Branch("PhotonEnergyHis", &fParticleInfo.fPhotonEnergyHis, "PhotonEnergy[1000]/I");
   fNtuple->Branch("PhotonGlobalTimeHis", &fParticleInfo.fPhotonGlobalTimeHis, "GlobalTime[5000]/I");
 }
 
