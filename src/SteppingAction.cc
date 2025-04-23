@@ -98,6 +98,9 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
       }
       case Detection:
       {
+        // Ignore Cherenkov photons
+        if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov")
+          return;
         assert(postPhyVolume->GetName().contains("Cathode_phy") && aTrack->GetTrackStatus() == fStopAndKill);
         G4double LocalTime = aTrack->GetLocalTime();
         G4double particleKinetic = postStepPoint->GetTotalEnergy();

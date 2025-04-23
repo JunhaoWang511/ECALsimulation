@@ -40,6 +40,11 @@ void TrackingAction::PostUserTrackingAction(const G4Track *aTrack)
       // Mark WLS photons
       trajectory->WLS();
     }
+    else if (creator && creator->GetProcessName() == "Cerenkov")
+    {
+      // Mark Cherenkov photons
+      trajectory->Cherenkov();
+    }
     if (trackInformation->GetTrackStatus() == detected)
       trajectory->SetDrawTrajectory(true);
   }

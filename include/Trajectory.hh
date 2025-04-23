@@ -52,9 +52,11 @@ public:
 
     void SetDrawTrajectory(G4bool b) { fDrawit = b; }
     void WLS() { fWls = true; }
+    void Cherenkov() { fCherenkov = true; }
 
 private:
     G4bool fWls;
+    G4bool fCherenkov;
     G4bool fDrawit;
     G4ParticleDefinition *fParticleDefinition;
 };
