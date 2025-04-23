@@ -2,10 +2,12 @@
 
 #include "G4Event.hh"
 #include <iomanip>
-#include <HistoManager.hh>
-#include <TTree.h>
+#include "HistoManager.hh"
+#include "TTree.h"
 #include "RunAction.hh"
-#include <G4PrimaryVertex.hh>
+#include "G4PrimaryVertex.hh"
+#include "G4PrimaryParticle.hh"
+#include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4RunManager.hh"
 #include "Run.hh"
@@ -24,6 +26,9 @@ void EventAction::BeginOfEventAction(const G4Event *aEvent)
   G4int fRunID = fRunAction->getRunID();
   fParticleInfo.fRunID = fRunID;
   fParticleInfo.fEventID = aEvent->GetEventID();
+  G4PrimaryParticle *particle = aEvent->GetPrimaryVertex()->GetPrimary();
+  fParticleInfo.fParticle = particle->GetParticleDefinition()->GetParticleName();
+  fParticleInfo.fPrimaryEnergy = particle->GetKineticEnergy() / MeV;
   fEdep = 0;
   fPhotonCount_Ceren = 0;
   fPhotonCount_Scint = 0;
@@ -63,12 +68,12 @@ void EventAction::EndOfEventAction(const G4Event *aEvent)
 void EventAction::Addinfo(G4double particleKinetic, G4double GlobalTime, G4double LocalTime, G4ThreeVector vpos)
 {
   // cost too much memory space to store information of every single photons
-  fParticleInfo.fPhotonEnergy.push_back(particleKinetic / eV);
-  fParticleInfo.fPhotonGlobalTime.push_back(GlobalTime / ns);
-  fParticleInfo.fPhotonLocalTime.push_back(LocalTime / ns);
-  fParticleInfo.fPhotonPositionX.push_back(vpos.x() / cm);
-  fParticleInfo.fPhotonPositionY.push_back(vpos.y() / cm);
-  fParticleInfo.fPhotonPositionZ.push_back(vpos.z() / cm);
-  // if ((GlobalTime / ns) < 500)
-  //   fParticleInfo.fPhotonGlobalTimeHis[int(GlobalTime / ns / 0.1)]++;
+  // fParticleInfo.fPhotonEnergy.push_back(particleKinetic / eV);
+  // fParticleInfo.fPhotonGlobalTime.push_back(GlobalTime / ns);
+  // fParticleInfo.fPhotonLocalTime.push_back(LocalTime / ns);
+  // fParticleInfo.fPhotonPositionX.push_back(vpos.x() / cm);
+  // fParticleInfo.fPhotonPositionY.push_back(vpos.y() / cm);
+  // fParticleInfo.fPhotonPositionZ.push_back(vpos.z() / cm);
+  if ((GlobalTime / ns) < 500)
+    fParticleInfo.fPhotonGlobalTimeHis[int(GlobalTime / ns / 0.1)]++;
 }

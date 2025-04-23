@@ -40,8 +40,10 @@ void HistoManager::book()
   G4cout << "---Create Root file--- " << G4endl;
   fRootFile = new TFile(fOutName.c_str(), "RECREATE");
   fNtuple = new TTree("ecal", "data of ecal");
-  fNtuple->Branch("EventID", &fParticleInfo.fEventID);
   fNtuple->Branch("RunID", &fParticleInfo.fRunID);
+  fNtuple->Branch("EventID", &fParticleInfo.fEventID);
+  fNtuple->Branch("PrimaryParticle", &fParticleInfo.fParticle);
+  fNtuple->Branch("PrimaryEnergy", &fParticleInfo.fPrimaryEnergy);
   fNtuple->Branch("PhotonGeneration", &fParticleInfo.fPhotonGen);
   fNtuple->Branch("PhotonWLSConversion", &fParticleInfo.fPhotonWLS);
   fNtuple->Branch("PhotonSelfAbsorption", &fParticleInfo.fPhotonSelfAbs);
@@ -49,13 +51,13 @@ void HistoManager::book()
   fNtuple->Branch("PhotonDetection", &fParticleInfo.fPhotonDet);
   fNtuple->Branch("EnergyDeposition", &fParticleInfo.fEnergyDeposition);
   // cost too much memory space to store information of every single photons
-  fNtuple->Branch("PhotonEnergy", &fParticleInfo.fPhotonEnergy);
-  fNtuple->Branch("PhotonGlobalTime", &fParticleInfo.fPhotonGlobalTime);
-  fNtuple->Branch("PhotonLocalTime", &fParticleInfo.fPhotonLocalTime);
-  fNtuple->Branch("PhotonPositionX", &fParticleInfo.fPhotonPositionX);
-  fNtuple->Branch("PhotonPositionY", &fParticleInfo.fPhotonPositionY);
-  fNtuple->Branch("PhotonPositionZ", &fParticleInfo.fPhotonPositionZ);
-  // fNtuple->Branch("PhotonGlobalTimeHis", &fParticleInfo.fPhotonGlobalTimeHis, "GlobalTime[5000]/I");
+  // fNtuple->Branch("PhotonEnergy", &fParticleInfo.fPhotonEnergy);
+  // fNtuple->Branch("PhotonGlobalTime", &fParticleInfo.fPhotonGlobalTime);
+  // fNtuple->Branch("PhotonLocalTime", &fParticleInfo.fPhotonLocalTime);
+  // fNtuple->Branch("PhotonPositionX", &fParticleInfo.fPhotonPositionX);
+  // fNtuple->Branch("PhotonPositionY", &fParticleInfo.fPhotonPositionY);
+  // fNtuple->Branch("PhotonPositionZ", &fParticleInfo.fPhotonPositionZ);
+  fNtuple->Branch("PhotonGlobalTimeHis", &fParticleInfo.fPhotonGlobalTimeHis, "GlobalTime[5000]/I");
 }
 
 void HistoManager::save()

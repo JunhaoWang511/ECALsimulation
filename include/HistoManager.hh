@@ -4,16 +4,18 @@
 #include "globals.hh"
 #include <vector>
 #include "g4root.hh"
-#include <G4ThreeVector.hh>
-#include <TFile.h>
-#include <TTree.h>
+#include "G4ThreeVector.hh"
+#include "TFile.h"
+#include "TTree.h"
+#include "TString.h"
 
 class ParticleInfo
 {
 public:
-  G4double fPrimaryEnergy;
   G4int fEventID;
   G4int fRunID;
+  TString fParticle;
+  G4double fPrimaryEnergy;
   G4int fPhotonGen;
   G4int fPhotonSelfAbs;
   G4int fPhotonBounAbs;
@@ -32,7 +34,9 @@ public:
 
   void reset()
   {
+    fRunID = 0;
     fEventID = 0;
+    fParticle = "";
     fPrimaryEnergy = 0;
     fPhotonGen = 0;
     fPhotonSelfAbs = 0;
@@ -53,7 +57,9 @@ public:
 
   ParticleInfo()
   {
+    fRunID = 0;
     fEventID = 0;
+    fParticle = "";
     fPrimaryEnergy = 0;
     fPhotonGen = 0;
     fPhotonSelfAbs = 0;
