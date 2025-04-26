@@ -29,6 +29,12 @@ void EventAction::BeginOfEventAction(const G4Event *aEvent)
   G4PrimaryParticle *particle = aEvent->GetPrimaryVertex()->GetPrimary();
   fParticleInfo.fParticle = particle->GetParticleDefinition()->GetParticleName();
   fParticleInfo.fPrimaryEnergy = particle->GetKineticEnergy() / MeV;
+  fParticleInfo.fPrimaryDirection[0] = particle->GetMomentumDirection().getX();
+  fParticleInfo.fPrimaryDirection[1] = particle->GetMomentumDirection().getY();
+  fParticleInfo.fPrimaryDirection[2] = particle->GetMomentumDirection().getZ();
+  fParticleInfo.fPrimaryPosition[0] = aEvent->GetPrimaryVertex()->GetPosition().getX() / cm;
+  fParticleInfo.fPrimaryPosition[1] = aEvent->GetPrimaryVertex()->GetPosition().getY() / cm;
+  fParticleInfo.fPrimaryPosition[2] = aEvent->GetPrimaryVertex()->GetPosition().getZ() / cm;
   fEdep = 0;
   fPhotonCount_Ceren = 0;
   fPhotonCount_Scint = 0;
@@ -36,7 +42,8 @@ void EventAction::BeginOfEventAction(const G4Event *aEvent)
   fBoundaryAbsorptionCount = 0;
   fEscapeCount = 0;
   fDetectionCount = 0;
-  fWLSCount = 0;
+  fWLSConvertionCount = 0;
+  fWLSGenerationCount = 0;
   fPrimaryVertex = aEvent->GetPrimaryVertex();
   fPrimaryParticle = fPrimaryVertex->GetPrimary();
 }
@@ -49,7 +56,7 @@ void EventAction::EndOfEventAction(const G4Event *aEvent)
            << G4endl;
   fParticleInfo.fEnergyDeposition = fEdep;
   fParticleInfo.fPhotonGen = fPhotonCount_Scint + fPhotonCount_Ceren;
-  fParticleInfo.fPhotonWLS = fWLSCount;
+  fParticleInfo.fPhotonWLS = fWLSGenerationCount;
   fParticleInfo.fPhotonSelfAbs = fAbsorptionCount;
   fParticleInfo.fPhotonBounAbs = fBoundaryAbsorptionCount;
   fParticleInfo.fPhotonDet = fDetectionCount;
@@ -58,11 +65,14 @@ void EventAction::EndOfEventAction(const G4Event *aEvent)
   Run *run = static_cast<Run *>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   run->IncEDep(fEdep);
   run->IncNPho(fPhotonCount_Scint + fPhotonCount_Ceren);
+  run->IncNPhoScin(fPhotonCount_Scint);
+  run->IncNPhoCeren(fPhotonCount_Ceren);
   run->IncSelfAbsPho(fAbsorptionCount);
   run->IncBounAbsPho(fBoundaryAbsorptionCount);
   run->IncEscPho(fEscapeCount);
   run->IncDetPho(fDetectionCount);
-  run->IncWLSPho(fWLSCount);
+  run->IncWLSConPho(fWLSConvertionCount);
+  run->IncWLSGenPho(fWLSGenerationCount);
 }
 
 void EventAction::Addinfo(G4double particleKinetic, G4double GlobalTime, G4double LocalTime, G4ThreeVector vpos)

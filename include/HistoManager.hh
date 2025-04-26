@@ -16,6 +16,8 @@ public:
   G4int fRunID;
   TString fParticle;
   G4double fPrimaryEnergy;
+  G4double fPrimaryPosition[3];
+  G4double fPrimaryDirection[3];
   G4int fPhotonGen;
   G4int fPhotonSelfAbs;
   G4int fPhotonBounAbs;
@@ -40,6 +42,8 @@ public:
     fEventID = 0;
     fParticle = "";
     fPrimaryEnergy = 0;
+    memset(fPrimaryPosition, 0, sizeof(fPrimaryPosition));
+    memset(fPrimaryDirection, 0, sizeof(fPrimaryDirection));
     fPhotonGen = 0;
     fPhotonSelfAbs = 0;
     fPhotonBounAbs = 0;
@@ -64,6 +68,8 @@ public:
     fEventID = 0;
     fParticle = "";
     fPrimaryEnergy = 0;
+    memset(fPrimaryPosition, 0, sizeof(fPrimaryPosition));
+    memset(fPrimaryDirection, 0, sizeof(fPrimaryDirection));
     fPhotonGen = 0;
     fPhotonSelfAbs = 0;
     fPhotonBounAbs = 0;

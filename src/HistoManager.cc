@@ -44,6 +44,8 @@ void HistoManager::book()
   fNtuple->Branch("EventID", &fParticleInfo.fEventID);
   fNtuple->Branch("PrimaryParticle", &fParticleInfo.fParticle);
   fNtuple->Branch("PrimaryEnergy", &fParticleInfo.fPrimaryEnergy);
+  fNtuple->Branch("PrimaryPosition", &fParticleInfo.fPrimaryPosition, "PrimaryPosition[3]/D");
+  fNtuple->Branch("PrimaryDirection", &fParticleInfo.fPrimaryDirection, "PrimaryDirection[3]/D");
   fNtuple->Branch("PhotonGeneration", &fParticleInfo.fPhotonGen);
   fNtuple->Branch("PhotonWLSConversion", &fParticleInfo.fPhotonWLS);
   fNtuple->Branch("PhotonSelfAbsorption", &fParticleInfo.fPhotonSelfAbs);

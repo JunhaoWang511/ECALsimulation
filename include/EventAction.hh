@@ -36,7 +36,8 @@ public:
   void IncBoundaryAbsorption() { fBoundaryAbsorptionCount++; }
   void IncEscaption() { fEscapeCount++; }
   void IncDetection() { fDetectionCount++; }
-  void IncWLS() { fWLSCount++; }
+  void IncWLSConv() { fWLSConvertionCount++; }
+  void IncWLSGen() { fWLSGenerationCount++; }
   // Gets the total photon count produced
   G4int GetPhotonCount() { return fPhotonCount_Scint + fPhotonCount_Ceren; }
   G4int GetPhotonCount_Scint() const { return fPhotonCount_Scint; }
@@ -45,7 +46,8 @@ public:
   G4int GetBoundaryAbsorptionCount() const { return fBoundaryAbsorptionCount; }
   G4int GetEscapeCount() const { return fEscapeCount; }
   G4int GetDetectionCount() const { return fDetectionCount; }
-  G4int GetWLSCount() const { return fWLSCount; }
+  G4int GetWLSConvertionCount() const { return fWLSConvertionCount; }
+  G4int GetWLSGenerationCount() const { return fWLSGenerationCount; }
 
 private:
   ParticleInfo fParticleInfo;
@@ -58,7 +60,8 @@ private:
   G4int fBoundaryAbsorptionCount;
   G4int fEscapeCount;
   G4int fDetectionCount;
-  G4int fWLSCount;
+  G4int fWLSConvertionCount;
+  G4int fWLSGenerationCount;
   G4PrimaryParticle *fPrimaryParticle;
   G4PrimaryVertex *fPrimaryVertex;
 };

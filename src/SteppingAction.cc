@@ -43,6 +43,7 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
   G4Track *aTrack = aStep->GetTrack();
   G4double GlobalTime = aTrack->GetGlobalTime();
   G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
+  G4StepPoint *preStepPoint = aStep->GetPreStepPoint();
   G4VPhysicalVolume *postPhyVolume = postStepPoint->GetPhysicalVolume();
 
   TrackInformation *trackInfo = (TrackInformation *)aTrack->GetUserInformation();
@@ -69,10 +70,10 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
   //  count for optical photon only
   if (aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
   {
-    // count for WLS photons
+    // count for WLS convertion process
     if (postStepPoint->GetProcessDefinedStep()->GetProcessName() == "OpWLS")
     {
-      fTrackingAction->GetEventAction()->IncWLS();
+      fTrackingAction->GetEventAction()->IncWLSConv();
     }
 
     // count for absorbed photons
@@ -98,9 +99,9 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
       }
       case Detection:
       {
-        // Ignore Cherenkov photons
-        if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov")
-          return;
+        // Ignore Cherenkov photons (directly detected)
+        // if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov")
+        //   return;
         assert(postPhyVolume->GetName().contains("Cathode_phy") && aTrack->GetTrackStatus() == fStopAndKill);
         G4double LocalTime = aTrack->GetLocalTime();
         G4double particleKinetic = postStepPoint->GetTotalEnergy();

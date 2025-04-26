@@ -23,7 +23,16 @@ G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(const G4Track *aTrac
             if (aTrack->GetCreatorProcess()->GetProcessName() == "Scintillation")
                 fEventAction->IncPhotonCount_Scint();
             else if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov")
+            {
                 fEventAction->IncPhotonCount_Ceren();
+                // kill Cerenkov photons at beginning
+                // return fKill;
+            }
+            else if (aTrack->GetCreatorProcess()->GetProcessName() == "OpWLS")
+            {
+                // count for generated WLS photons
+                fEventAction->IncWLSGen();
+            }
         }
     }
     return fUrgent;
