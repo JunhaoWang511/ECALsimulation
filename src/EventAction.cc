@@ -22,19 +22,20 @@ EventAction::~EventAction() {}
 
 void EventAction::BeginOfEventAction(const G4Event *aEvent)
 {
+  fPrimaryVertex = aEvent->GetPrimaryVertex();
+  fPrimaryParticle = fPrimaryVertex->GetPrimary();
   fParticleInfo.reset();
   G4int fRunID = fRunAction->getRunID();
   fParticleInfo.fRunID = fRunID;
   fParticleInfo.fEventID = aEvent->GetEventID();
-  G4PrimaryParticle *particle = aEvent->GetPrimaryVertex()->GetPrimary();
-  fParticleInfo.fParticle = particle->GetParticleDefinition()->GetParticleName();
-  fParticleInfo.fPrimaryEnergy = particle->GetKineticEnergy() / MeV;
-  fParticleInfo.fPrimaryDirection[0] = particle->GetMomentumDirection().getX();
-  fParticleInfo.fPrimaryDirection[1] = particle->GetMomentumDirection().getY();
-  fParticleInfo.fPrimaryDirection[2] = particle->GetMomentumDirection().getZ();
-  fParticleInfo.fPrimaryPosition[0] = aEvent->GetPrimaryVertex()->GetPosition().getX() / cm;
-  fParticleInfo.fPrimaryPosition[1] = aEvent->GetPrimaryVertex()->GetPosition().getY() / cm;
-  fParticleInfo.fPrimaryPosition[2] = aEvent->GetPrimaryVertex()->GetPosition().getZ() / cm;
+  fParticleInfo.fParticle = fPrimaryParticle->GetParticleDefinition()->GetParticleName();
+  fParticleInfo.fPrimaryEnergy = fPrimaryParticle->GetKineticEnergy() / MeV;
+  fParticleInfo.fPrimaryDirection[0] = fPrimaryParticle->GetMomentumDirection().getX();
+  fParticleInfo.fPrimaryDirection[1] = fPrimaryParticle->GetMomentumDirection().getY();
+  fParticleInfo.fPrimaryDirection[2] = fPrimaryParticle->GetMomentumDirection().getZ();
+  fParticleInfo.fPrimaryPosition[0] = fPrimaryVertex->GetPosition().getX() / cm;
+  fParticleInfo.fPrimaryPosition[1] = fPrimaryVertex->GetPosition().getY() / cm;
+  fParticleInfo.fPrimaryPosition[2] = fPrimaryVertex->GetPosition().getZ() / cm;
   fEdep = 0;
   fPhotonCount_Ceren = 0;
   fPhotonCount_Scint = 0;
@@ -44,8 +45,6 @@ void EventAction::BeginOfEventAction(const G4Event *aEvent)
   fDetectionCount = 0;
   fWLSConvertionCount = 0;
   fWLSGenerationCount = 0;
-  fPrimaryVertex = aEvent->GetPrimaryVertex();
-  fPrimaryParticle = fPrimaryVertex->GetPrimary();
 }
 
 void EventAction::EndOfEventAction(const G4Event *aEvent)
