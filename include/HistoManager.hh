@@ -3,7 +3,7 @@
 
 #include "globals.hh"
 #include <vector>
-#include "g4root.hh"
+#include "G4AnalysisManager.hh"
 #include "G4ThreeVector.hh"
 #include "TFile.h"
 #include "TTree.h"

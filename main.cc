@@ -13,11 +13,16 @@
 
 #include "G4EmStandardPhysics_option4.hh"
 #include "G4OpticalPhysics.hh"
+#include "G4OpticalParameters.hh"
 #include "QGSP_BERT.hh"
 #include "QGSP_BERT_HP.hh"
 
 #include "G4UIExecutive.hh"
 #include "G4VisExecutive.hh"
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <ctime>
 
 namespace
 {
@@ -28,13 +33,14 @@ struct ECALTerminalData
 {
   ECALTerminalData()
       : isInteractive(false), executeable_macro(""), output_file("ECAL.root"),
-        N_threads(std::min(G4Threading::G4GetNumberOfCores(), 8)),
-        use_optical(false) {}
+        N_threads(std::min(G4Threading::G4GetNumberOfCores(), 1)),
+        use_optical(false), pid_seed(0) {}
   G4bool isInteractive;
   G4String executeable_macro;
   G4String output_file;
   G4int N_threads;
   G4bool use_optical;
+  G4long pid_seed;
 };
 
 void printUsage(void)
@@ -57,6 +63,9 @@ void printUsage(void)
   G4cout << "         -n          - Number of threads to use (default: 8 )"
          << G4endl;
   G4cout << "         -op         - Use PhysicsList with optics" << G4endl;
+  G4cout << "         -s          - Set pid_seed (default: 0"
+      ", random value = /dev/random + time + pid_seed) " 
+                     << G4endl;
   G4cout << "         --help | -h - Print this message and exit " << G4endl;
 }
 
@@ -136,6 +145,23 @@ G4bool parseArgs(int argc, char **argv, ECALTerminalData &cmd)
         break;
       }
 #endif
+      if (G4String(argv[i], 2) == "-s")
+      {
+        G4String tmp = argv[i] + 2;
+        if (tmp == "")
+        {
+          if (++i < argc)
+          {
+            cmd.pid_seed = G4UIcommand::ConvertToInt(argv[i]);
+          }
+        }
+        else
+        {
+          cmd.pid_seed = G4UIcommand::ConvertToInt(tmp);
+        }
+        G4cout << "     PID seed is:   " << cmd.pid_seed << G4endl;
+        break;
+      }
     } while (false);
   }
   return true;
@@ -158,17 +184,18 @@ int main(int argc, char **argv)
   fd = open("/dev/random", 0);
   read(fd, &seed, sizeof(seed));
   seed += time(NULL);
+  seed += cmd.pid_seed;
   CLHEP::HepRandom::setTheSeed(seed);
   CLHEP::HepRandom::showEngineStatus();
 #ifdef G4MULTITHREADED
   G4MTRunManager *runManager = new G4MTRunManager;
   runManager->SetNumberOfThreads(cmd.N_threads);
   G4cout
-      << "Multi-Threads Mode \033[47m \033[32m ON \033[0m ; Number of Threads: "
+      << "Multi-Threads Mode: ON ; Number of Threads: "
       << cmd.N_threads << G4endl;
 #else
   G4RunManager *runManager = new G4RunManager;
-  G4cout << "Multi-Threads Mode \033[47m \033[32m OFF \033[0m" << G4endl;
+  G4cout << "Multi-Threads Mode: OFF" << G4endl;
 #endif
 
   DetectorConstruction *detector = new DetectorConstruction();
@@ -180,12 +207,16 @@ int main(int argc, char **argv)
   G4OpticalPhysics *opticalPhysics = new G4OpticalPhysics();
   if (cmd.use_optical)
   {
-    opticalPhysics->SetWLSTimeProfile("exponential");
-    opticalPhysics->SetScintillationYieldFactor(1.0);
-    opticalPhysics->SetMaxNumPhotonsPerStep(100);
-    opticalPhysics->SetMaxBetaChangePerStep(10.0);
-    opticalPhysics->SetTrackSecondariesFirst(kCerenkov, true);
-    opticalPhysics->SetTrackSecondariesFirst(kScintillation, true);
+    auto opticalParams = G4OpticalParameters::Instance();
+    // WLS 时间模型
+    opticalParams->SetWLSTimeProfile("exponential");
+    // Cherenkov 参数
+    opticalParams->SetCerenkovMaxPhotonsPerStep(100);
+    opticalParams->SetCerenkovMaxBetaChange(10.0);
+    opticalParams->SetCerenkovTrackSecondariesFirst(true);
+    // Scintillation 参数
+    opticalParams->SetScintTrackSecondariesFirst(true);
+    // 注册 optical physics
     physicsList->RegisterPhysics(opticalPhysics);
     G4cout << "Register optical physics successfully" << G4endl;
   }

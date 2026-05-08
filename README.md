@@ -11,7 +11,7 @@ The ECAL (electromagnetic calorimeter) sub-detector of [**STCF**](https://stcf.u
 
 ## Required dependencies
 
-- [Geant4 10.5](https://geant4.web.cern.ch/ "Geant4 official website")
+- [Geant4 11.2](https://geant4.web.cern.ch/ "Geant4 official website")
 - [ROOT 6.26](https://root.cern/ "ROOT official website")
 - CMAKE 3.16 or higher
 - C++ standard 17 or higher

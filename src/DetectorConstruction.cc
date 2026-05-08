@@ -99,14 +99,15 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     G4MaterialPropertiesTable *CrystalMPT = new G4MaterialPropertiesTable();
     CrystalMPT->AddProperty("RINDEX", photonEnergy, crystalRindex, nEntries);
     CrystalMPT->AddProperty("ABSLENGTH", photonEnergy, crystalAbsLen, nEntries);
-    CrystalMPT->AddProperty("FASTCOMPONENT", photonEnergy, crystalEmSpec, nEntries); // emission spectrum
-    CrystalMPT->AddProperty("SLOWCOMPONENT", photonEnergy, crystalEmSpec, nEntries);
-    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD", 1880.0 / MeV);     // absolute light yield
-    CrystalMPT->AddConstProperty("FASTSCINTILLATIONRISETIME", 1.13 * ns); // rise time
-    CrystalMPT->AddConstProperty("SLOWSCINTILLATIONRISETIME", 1.13 * ns);
-    CrystalMPT->AddConstProperty("FASTTIMECONSTANT", 6. * ns); // decay time
-    CrystalMPT->AddConstProperty("SLOWTIMECONSTANT", 30. * ns);
-    CrystalMPT->AddConstProperty("YIELDRATIO", 0.234); // Fast component yield ratio
+    CrystalMPT->AddProperty("SCINTILLATIONCOMPONENT1", photonEnergy, crystalEmSpec, nEntries); // emission spectrum
+    CrystalMPT->AddProperty("SCINTILLATIONCOMPONENT2", photonEnergy, crystalEmSpec, nEntries);
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD", 1880.0 / MeV);     // light yield
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD1", 0.234);
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD2", 0.766);
+    CrystalMPT->AddConstProperty("SCINTILLATIONRISETIME1", 1.13 * ns); // rise time
+    CrystalMPT->AddConstProperty("SCINTILLATIONRISETIME1", 1.13 * ns);
+    CrystalMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 6. * ns); // decay time
+    CrystalMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 30. * ns);
     CrystalMPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
     CsI->SetMaterialPropertiesTable(CrystalMPT);
 
@@ -241,11 +242,11 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     // Stave definition
     //
     G4double ta, tc, th1, th2, th3, th4, talpha1, talpha2, ttheta, tphi;
-    ta = 4 * cm;  // length of front-end face(at - z-axis) of crystal(along y-axis)
-    tc = 5 * cm;  // length of back-end face(at + z-axis) of crystal(along y-axis)
-    th1 = 4 * cm; // length of front-end face of crystal(along x-axis, at smaller y-side)
+    ta = 5 * cm;  // length of front-end face(at - z-axis) of crystal(along y-axis)
+    tc = 6 * cm;  // length of back-end face(at + z-axis) of crystal(along y-axis)
+    th1 = 5 * cm; // length of front-end face of crystal(along x-axis, at smaller y-side)
     th2 = th1;    // length of front-end face of crystal(along x-axis, at bigger y-sise)
-    th3 = 5 * cm; // length of back-end face of crystal(along x-axis, at smaller y-side)
+    th3 = 6 * cm; // length of back-end face of crystal(along x-axis, at smaller y-side)
     th4 = th3;    // length of back-end face of crystal(along x-axis, at bigger y-sise)
     talpha1 = 0;  // angle between y-axis and the center line of front-end face
     talpha2 = 0;  // angle between y-axis and the center line of back-end face

@@ -42,7 +42,7 @@ class HistoManager;
 class ActionInitialization : public G4VUserActionInitialization
 {
   public:
-    ActionInitialization(G4String aName="DIRC.root");
+    ActionInitialization(G4String aName="ecal.root");
     virtual ~ActionInitialization();
 
     virtual void BuildForMaster() const;
