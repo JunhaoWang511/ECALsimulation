@@ -1,5 +1,6 @@
 #include "ActionInitialization.hh"
 #include "PrimaryGeneratorAction.hh"
+#include "PrimaryGeneratorMessenger.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "TrackingAction.hh"
@@ -11,10 +12,13 @@ ActionInitialization::ActionInitialization(G4String aName)
 	: G4VUserActionInitialization(), histName(aName)
 {
 	fHistoManager = new HistoManager(histName);
+	// master 线程注册 UI 命令，写入共享配置，各 worker 读取
+	fMessenger = new PrimaryGeneratorMessenger();
 }
 
 ActionInitialization::~ActionInitialization()
 {
+	delete fMessenger;
 	delete fHistoManager;
 }
 void ActionInitialization::BuildForMaster() const

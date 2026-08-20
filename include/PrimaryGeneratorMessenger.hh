@@ -23,35 +23,35 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: ActionInitialization.hh 68058 2013-03-13 14:47:43Z gcosmo $
 //
-/// \file ActionInitialization.hh
-/// \brief Definition of the ActionInitialization class
+//
+//
 
-#ifndef ActionInitialization_h
-#define ActionInitialization_h 1
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#ifndef PrimaryGeneratorMessenger_h
+#define PrimaryGeneratorMessenger_h 1
 
 #include "globals.hh"
-#include "G4VUserActionInitialization.hh"
+#include "G4UImessenger.hh"
 
-class HistoManager;
-class PrimaryGeneratorMessenger;
+class G4UIcmdWithABool;
 
-/// Action initialization class.
-///
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class ActionInitialization : public G4VUserActionInitialization
+class PrimaryGeneratorMessenger : public G4UImessenger
 {
-  public:
-    ActionInitialization(G4String aName="ecal.root");
-    virtual ~ActionInitialization();
+public:
+    PrimaryGeneratorMessenger();
+    ~PrimaryGeneratorMessenger() override;
 
-    virtual void BuildForMaster() const;
-    virtual void Build() const;
-  private:
-    G4String histName;
-    HistoManager* fHistoManager;
-    PrimaryGeneratorMessenger* fMessenger;
+    void SetNewValue(G4UIcommand *, G4String) override;
+
+private:
+    G4UIcmdWithABool *fRandomTimeCmd = nullptr;
 };
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif

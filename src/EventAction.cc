@@ -30,6 +30,7 @@ void EventAction::BeginOfEventAction(const G4Event *aEvent)
   fParticleInfo.fEventID = aEvent->GetEventID();
   fParticleInfo.fParticle = fPrimaryParticle->GetParticleDefinition()->GetParticleName();
   fParticleInfo.fPrimaryEnergy = fPrimaryParticle->GetKineticEnergy() / MeV;
+  fParticleInfo.fPrimaryTime = fPrimaryVertex->GetT0() / ns;
   fParticleInfo.fPrimaryDirection[0] = fPrimaryParticle->GetMomentumDirection().getX();
   fParticleInfo.fPrimaryDirection[1] = fPrimaryParticle->GetMomentumDirection().getY();
   fParticleInfo.fPrimaryDirection[2] = fPrimaryParticle->GetMomentumDirection().getZ();
@@ -50,7 +51,7 @@ void EventAction::BeginOfEventAction(const G4Event *aEvent)
 void EventAction::EndOfEventAction(const G4Event *aEvent)
 {
   G4int evtNb = aEvent->GetEventID();
-  if ((evtNb + 1) % 10 == 0 || fParticleInfo.fDecayChain.length() > 1)
+  if ((evtNb + 1) % 1 == 0 || fParticleInfo.fDecayChain.length() > 1)
     G4cout << " end of event " << evtNb << " :" + fParticleInfo.fDecayChain
            << G4endl;
   fParticleInfo.fEnergyDeposition = fEdep;
@@ -77,12 +78,12 @@ void EventAction::EndOfEventAction(const G4Event *aEvent)
 void EventAction::Addinfo(G4double particleKinetic, G4double GlobalTime, G4double LocalTime, G4ThreeVector vpos)
 {
   // cost too much memory space to store information of every single photons
-  // fParticleInfo.fPhotonEnergy.push_back(particleKinetic / eV);
-  // fParticleInfo.fPhotonGlobalTime.push_back(GlobalTime / ns);
-  // fParticleInfo.fPhotonLocalTime.push_back(LocalTime / ns);
-  // fParticleInfo.fPhotonPositionX.push_back(vpos.x() / cm);
-  // fParticleInfo.fPhotonPositionY.push_back(vpos.y() / cm);
-  // fParticleInfo.fPhotonPositionZ.push_back(vpos.z() / cm);
+  fParticleInfo.fPhotonEnergy.push_back(particleKinetic / eV);
+  fParticleInfo.fPhotonGlobalTime.push_back(GlobalTime / ns);
+  fParticleInfo.fPhotonLocalTime.push_back(LocalTime / ns);
+  fParticleInfo.fPhotonPositionX.push_back(vpos.x() / cm);
+  fParticleInfo.fPhotonPositionY.push_back(vpos.y() / cm);
+  fParticleInfo.fPhotonPositionZ.push_back(vpos.z() / cm);
   if ((particleKinetic / eV) < 10)
     fParticleInfo.fPhotonEnergyHis[int(particleKinetic / eV / 0.01)]++;
   if ((GlobalTime / ns) < 500)

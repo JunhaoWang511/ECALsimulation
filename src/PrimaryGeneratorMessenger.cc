@@ -23,35 +23,47 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: ActionInitialization.hh 68058 2013-03-13 14:47:43Z gcosmo $
 //
-/// \file ActionInitialization.hh
-/// \brief Definition of the ActionInitialization class
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef ActionInitialization_h
-#define ActionInitialization_h 1
+#include "PrimaryGeneratorMessenger.hh"
 
-#include "globals.hh"
-#include "G4VUserActionInitialization.hh"
+#include "PrimaryGeneratorConfig.hh"
+#include "G4UIcmdWithABool.hh"
+#include "G4SystemOfUnits.hh"
 
-class HistoManager;
-class PrimaryGeneratorMessenger;
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-/// Action initialization class.
-///
-
-class ActionInitialization : public G4VUserActionInitialization
+PrimaryGeneratorMessenger::PrimaryGeneratorMessenger()
+    : G4UImessenger()
 {
-  public:
-    ActionInitialization(G4String aName="ecal.root");
-    virtual ~ActionInitialization();
+    fRandomTimeCmd =
+        new G4UIcmdWithABool("/gps/randomTime", this);
+    fRandomTimeCmd->SetGuidance(
+        "Set Time of each primary particle randomly between 0 and 12.5 ns.");
+    fRandomTimeCmd->SetDefaultValue(false);
+    fRandomTimeCmd->AvailableForStates(G4State_Idle, G4State_PreInit);
+}
 
-    virtual void BuildForMaster() const;
-    virtual void Build() const;
-  private:
-    G4String histName;
-    HistoManager* fHistoManager;
-    PrimaryGeneratorMessenger* fMessenger;
-};
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#endif
+PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
+{
+    delete fRandomTimeCmd;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand *command,
+                                            G4String newValue)
+{
+    if (command == fRandomTimeCmd)
+    {
+        G4bool value = fRandomTimeCmd->GetNewBoolValue(newValue);
+        // 写入共享配置，所有 worker 均能读到
+        PrimaryGeneratorConfig::Instance()->SetTimeSpread(value);
+    }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -44,12 +44,13 @@ void HistoManager::book()
   fNtuple->Branch("EventID", &fParticleInfo.fEventID);
   fNtuple->Branch("PrimaryParticle", &fParticleInfo.fParticle);
   fNtuple->Branch("PrimaryEnergy", &fParticleInfo.fPrimaryEnergy);
+  fNtuple->Branch("PrimaryTime", &fParticleInfo.fPrimaryTime);
   fNtuple->Branch("PrimaryPosition", &fParticleInfo.fPrimaryPosition, "PrimaryPosition[3]/D");
   fNtuple->Branch("PrimaryDirection", &fParticleInfo.fPrimaryDirection, "PrimaryDirection[3]/D");
   fNtuple->Branch("PhotonGeneration", &fParticleInfo.fPhotonGen);
-  fNtuple->Branch("PhotonWLSConversion", &fParticleInfo.fPhotonWLS);
-  fNtuple->Branch("PhotonSelfAbsorption", &fParticleInfo.fPhotonSelfAbs);
-  fNtuple->Branch("PhotonBoundaryAbsorption", &fParticleInfo.fPhotonBounAbs);
+  // fNtuple->Branch("PhotonWLSConversion", &fParticleInfo.fPhotonWLS);
+  // fNtuple->Branch("PhotonSelfAbsorption", &fParticleInfo.fPhotonSelfAbs);
+  // fNtuple->Branch("PhotonBoundaryAbsorption", &fParticleInfo.fPhotonBounAbs);
   fNtuple->Branch("PhotonDetection", &fParticleInfo.fPhotonDet);
   fNtuple->Branch("EnergyDeposition", &fParticleInfo.fEnergyDeposition);
   // cost too much memory space to store information of every single photons

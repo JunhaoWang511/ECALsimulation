@@ -2,7 +2,7 @@
 // ********************************************************************
 // * License and Disclaimer                                           *
 // *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// *  The  Geant4 software  is  copyright of the Copyright Holders  of *
 // * the Geant4 Collaboration.  It is provided  under  the terms  and *
 // * conditions of the Geant4 Software License,  included in the file *
 // * LICENSE and available at  http://cern.ch/geant4/license .  These *
@@ -15,43 +15,37 @@
 // * use.  Please see the license in the file  LICENSE  and URL above *
 // * for the full disclaimer and the limitation of liability.         *
 // *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
+// *  This  code  implementation is the result of  the  scientific and *
 // * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
+// * By using,  copying,  modifying  or distributing  the software (or *
 // * any work based  on the software)  you  agree  to acknowledge its *
 // * use  in  resulting  scientific  publications,  and indicate your *
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: ActionInitialization.hh 68058 2013-03-13 14:47:43Z gcosmo $
 //
-/// \file ActionInitialization.hh
-/// \brief Definition of the ActionInitialization class
+//
+//
 
-#ifndef ActionInitialization_h
-#define ActionInitialization_h 1
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "globals.hh"
-#include "G4VUserActionInitialization.hh"
+#include "PrimaryGeneratorConfig.hh"
 
-class HistoManager;
-class PrimaryGeneratorMessenger;
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-/// Action initialization class.
-///
-
-class ActionInitialization : public G4VUserActionInitialization
+PrimaryGeneratorConfig *PrimaryGeneratorConfig::Instance()
 {
-  public:
-    ActionInitialization(G4String aName="ecal.root");
-    virtual ~ActionInitialization();
+    // 函数局部静态变量：C++11 起线程安全的惰性初始化
+    static PrimaryGeneratorConfig instance;
+    return &instance;
+}
 
-    virtual void BuildForMaster() const;
-    virtual void Build() const;
-  private:
-    G4String histName;
-    HistoManager* fHistoManager;
-    PrimaryGeneratorMessenger* fMessenger;
-};
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#endif
+PrimaryGeneratorConfig::PrimaryGeneratorConfig()
+    : fTimeSpread(false)  // 默认 0 时刻产生粒子，与 /gps/randomTime 默认值一致
+{
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

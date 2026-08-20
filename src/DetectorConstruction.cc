@@ -63,23 +63,36 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                4.1333 * eV, 4.2759 * eV, 4.4286 * eV};
 
     const G4int nEntries = sizeof(photonEnergy) / sizeof(G4double);
-
+    // us-scale slow component is not considered
     // emission spectrum, refractive index and absorption length of undoped CsI
-    G4double crystalEmSpec[] = {0.0034, 0.0033, 0.0036, 0.0029, 0.0047, 0.0046, 0.0045, 0.0055, 0.0068, 0.0065, 0.0071, 0.0077, 0.0085,
-                                0.0087, 0.0103, 0.0107, 0.0110, 0.0120, 0.0129, 0.0126, 0.0140, 0.0144, 0.0134, 0.0124, 0.0129, 0.0140,
-                                0.0121, 0.0127, 0.0127, 0.0127, 0.0155, 0.0182, 0.0272, 0.0423, 0.0737, 0.1297, 0.2369, 0.4121, 0.6443,
-                                0.8914, 1.0000, 0.9236, 0.7050};
-    assert(sizeof(crystalEmSpec) == sizeof(photonEnergy));
+    G4double crystalEmSpec_Fast[] = {0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+                                     0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+                                     0.0000, 0.0000, 0.0000, 0.0000, 0.0155, 0.0182, 0.0272, 0.0423, 0.0737, 0.1297, 0.2369, 0.4121, 0.6443,
+                                     0.8914, 1.0000, 0.9236, 0.7050};
+    assert(sizeof(crystalEmSpec_Fast) == sizeof(photonEnergy));
+    G4double CrystalEmSpec_Slow[] = {0.0034, 0.0033, 0.0036, 0.0029, 0.0047, 0.0046, 0.0045, 0.0055, 0.0068, 0.0065, 0.0071, 0.0077, 0.0085,
+                                     0.0087, 0.0103, 0.0107, 0.0110, 0.0120, 0.0129, 0.0126, 0.0140, 0.0144, 0.0134, 0.0124, 0.0129, 0.0140,
+                                     0.0121, 0.0127, 0.0127, 0.0127, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+                                     0.0000, 0.0000, 0.0000, 0.0000};
+    assert(sizeof(CrystalEmSpec_Slow) == sizeof(photonEnergy));
     G4double crystalRindex[] = {1.7736, 1.7746, 1.7756, 1.7766, 1.7777, 1.7789, 1.7801, 1.7813, 1.7827, 1.7841, 1.7856, 1.7872, 1.7888,
                                 1.7906, 1.7925, 1.7945, 1.7966, 1.7989, 1.8013, 1.8039, 1.8067, 1.8097, 1.8129, 1.8164, 1.8201, 1.8242,
                                 1.8286, 1.8334, 1.8386, 1.8443, 1.8506, 1.8576, 1.8654, 1.8740, 1.8836, 1.8945, 1.9069, 1.9211, 1.9374,
                                 1.9565, 1.9791, 2.0062, 2.0395};
+    // Self-absorption : Mie scattering = 1 : 9
     // absorb length of CsI crystal (!undetermined pars!)
-    G4double crystalAbsLen[] = {34.33 * 3 * cm, 34.01 * 3 * cm, 33.69 * 3 * cm, 33.07 * 3 * cm, 32.76 * 3 * cm, 32.31 * 3 * cm, 31.86 * 3 * cm, 31.43 * 3 * cm, 31.00 * 3 * cm,
-                                30.58 * 3 * cm, 30.17 * 3 * cm, 29.63 * 3 * cm, 29.24 * 3 * cm, 28.85 * 3 * cm, 28.47 * 3 * cm, 27.97 * 3 * cm, 27.61 * 3 * cm, 27.13 * 3 * cm,
-                                26.66 * 3 * cm, 26.21 * 3 * cm, 25.76 * 3 * cm, 25.65 * 3 * cm, 25.31 * 3 * cm, 24.78 * 3 * cm, 24.57 * 3 * cm, 24.05 * 3 * cm, 23.65 * 3 * cm,
-                                23.25 * 3 * cm, 22.77 * 3 * cm, 22.38 * 3 * cm, 21.83 * 3 * cm, 21.29 * 3 * cm, 20.85 * 3 * cm, 20.41 * 3 * cm, 20.24 * 3 * cm, 20.07 * 3 * cm,
-                                19.50 * 3 * cm, 18.93 * 3 * cm, 18.46 * 3 * cm, 17.70 * 3 * cm, 16.68 * 3 * cm, 16.19 * 3 * cm, 15.51 * 3 * cm};
+    G4double crystalAbsLen[] = {573.13 * cm, 566.99 * cm, 560.99 * cm, 549.52 * cm, 543.87 * cm, 535.68 * cm, 527.57 * cm, 519.86 * cm,
+                                512.37 * cm, 505.09 * cm, 498.00 * cm, 488.76 * cm, 482.11 * cm, 475.64 * cm, 469.34 * cm, 461.10 * cm,
+                                455.17 * cm, 447.53 * cm, 440.02 * cm, 432.86 * cm, 425.82 * cm, 424.15 * cm, 419.00 * cm, 410.92 * cm,
+                                407.71 * cm, 399.95 * cm, 393.91 * cm, 388.13 * cm, 381.08 * cm, 375.57 * cm, 367.69 * cm, 360.12 * cm,
+                                354.01 * cm, 348.10 * cm, 345.78 * cm, 343.48 * cm, 335.78 * cm, 328.34 * cm, 322.25 * cm, 312.54 * cm,
+                                299.83 * cm, 293.89 * cm, 285.74 * cm};
+    // Mie scattering length of CsI crystal
+    G4double crystalMieLen[] = {54.19 * cm, 53.50 * cm, 52.82 * cm, 51.53 * cm, 50.89 * cm, 49.97 * cm, 49.06 * cm, 48.19 * cm, 47.35 * cm,
+                                46.52 * cm, 45.73 * cm, 44.68 * cm, 43.93 * cm, 43.20 * cm, 42.49 * cm, 41.55 * cm, 40.88 * cm, 40.02 * cm,
+                                39.16 * cm, 38.35 * cm, 37.55 * cm, 37.36 * cm, 36.77 * cm, 35.85 * cm, 35.49 * cm, 34.60 * cm, 33.91 * cm,
+                                33.25 * cm, 32.44 * cm, 31.81 * cm, 30.90 * cm, 30.03 * cm, 29.33 * cm, 28.65 * cm, 28.38 * cm, 28.11 * cm,
+                                27.22 * cm, 26.35 * cm, 25.64 * cm, 24.50 * cm, 23.01 * cm, 22.30 * cm, 21.33 * cm};
 
     // rafractive index and absorption length of teflon
     G4double teflonRindex[] = {1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38, 1.38,
@@ -99,16 +112,24 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     G4MaterialPropertiesTable *CrystalMPT = new G4MaterialPropertiesTable();
     CrystalMPT->AddProperty("RINDEX", photonEnergy, crystalRindex, nEntries);
     CrystalMPT->AddProperty("ABSLENGTH", photonEnergy, crystalAbsLen, nEntries);
-    CrystalMPT->AddProperty("SCINTILLATIONCOMPONENT1", photonEnergy, crystalEmSpec, nEntries); // emission spectrum
-    CrystalMPT->AddProperty("SCINTILLATIONCOMPONENT2", photonEnergy, crystalEmSpec, nEntries);
-    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD", 1880.0 / MeV);     // light yield
-    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD1", 0.234);
-    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD2", 0.766);
+    CrystalMPT->AddProperty("MIEHG", photonEnergy, crystalMieLen, nEntries);
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD", 2088 / MeV);                                 // light yield
+    CrystalMPT->AddProperty("SCINTILLATIONCOMPONENT1", photonEnergy, crystalEmSpec_Fast, nEntries); // emission spectrum
+    CrystalMPT->AddProperty("SCINTILLATIONCOMPONENT2", photonEnergy, crystalEmSpec_Fast, nEntries);
+    CrystalMPT->AddProperty("SCINTILLATIONCOMPONENT3", photonEnergy, CrystalEmSpec_Slow, nEntries);
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD1", 0.234 * 0.9);
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD2", 0.766 * 0.9);
+    CrystalMPT->AddConstProperty("SCINTILLATIONYIELD3", 0.1);
     CrystalMPT->AddConstProperty("SCINTILLATIONRISETIME1", 1.13 * ns); // rise time
-    CrystalMPT->AddConstProperty("SCINTILLATIONRISETIME1", 1.13 * ns);
+    CrystalMPT->AddConstProperty("SCINTILLATIONRISETIME2", 1.13 * ns);
+    CrystalMPT->AddConstProperty("SCINTILLATIONRISETIME3", 1.13 * ns);
     CrystalMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 6. * ns); // decay time
     CrystalMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 30. * ns);
+    CrystalMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT3", 1. * us);
     CrystalMPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
+    CrystalMPT->AddConstProperty("MIEHG_FORWARD", 0.9);
+    CrystalMPT->AddConstProperty("MIEHG_BACKWARD", -0.3);
+    CrystalMPT->AddConstProperty("MIEHG_FORWARD_RATIO", 0.9);
     CsI->SetMaterialPropertiesTable(CrystalMPT);
 
     G4double ErefractiveIndex_air[2] = {0.4 * eV, 6.0 * eV};
@@ -129,7 +150,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     // emission spectrum and absorption length of wavelength shifter(WLS) (!undetermined pars!)
     G4double wlsAbsLen[] = {10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm,
                             10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm,
-                            9.27E-03 * cm, 2.85E-03 * cm, 9.27E-04 * cm, 4.88E-04 * cm, 2.99E-04 * cm, 2.02E-04 * cm, 1.50E-04 * cm,
+                            10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 10000 * cm, 2.02E-04 * cm, 1.50E-04 * cm,
                             1.27E-04 * cm, 1.18E-04 * cm, 1.16E-04 * cm, 1.24E-04 * cm, 1.40E-04 * cm, 1.73E-04 * cm, 2.23E-04 * cm,
                             2.99E-04 * cm, 4.21E-04 * cm, 6.08E-04 * cm, 8.06E-04 * cm, 7.57E-04 * cm, 2.99E-04 * cm, 9.13E-05 * cm,
                             4.02E-05 * cm, 2.77E-05 * cm, 2.38E-05 * cm, 2.62E-05 * cm, 3.27E-05 * cm, 4.51E-05 * cm};
@@ -138,9 +159,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                             0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
                             0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000};
     // refractive index of WLS (!undetermined!)
-    G4double wlsRindex[] = {1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6,
-                            1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6,
-                            1.6, 1.6, 1.6};
+    G4double wlsRindex[] = {1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5,
+                            1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5,
+                            1.5, 1.5, 1.5};
     // material properties of WLS
     G4MaterialPropertiesTable *wlsMPT = new G4MaterialPropertiesTable();
     // refractive index of WLS(!undetermined pars!)
@@ -158,25 +179,25 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     G4double tr[] = {1.38, 1.38, 1.38,
                      1.38, 1.38, 1.38,
                      1.38, 1.38, 1.38};
-    G4double refle[] = {0.97, 0.97, 0.97,
-                        0.97, 0.97, 0.97,
-                        0.97, 0.97, 0.97};
-    G4double specularlobe[] = {0.25, 0.25, 0.25,
-                               0.25, 0.25, 0.25,
-                               0.25, 0.25, 0.25};
-    G4double specularspike[] = {0.7, 0.7, 0.7,
-                                0.7, 0.7, 0.7,
-                                0.7, 0.7, 0.7};
-    G4double backscatter[] = {0.05, 0.05, 0.05,
-                              0.05, 0.05, 0.05,
-                              0.05, 0.05, 0.05};
+    G4double refle[] = {0.99, 0.99, 0.99,
+                        0.99, 0.99, 0.99,
+                        0.99, 0.99, 0.99};
+    G4double specularlobe[] = {0.05, 0.05, 0.05,
+                               0.05, 0.05, 0.05,
+                               0.05, 0.05, 0.05};
+    G4double specularspike[] = {0.02, 0.02, 0.02,
+                                0.02, 0.02, 0.02,
+                                0.02, 0.02, 0.02};
+    G4double backscatter[] = {0.03, 0.03, 0.03,
+                              0.03, 0.03, 0.03,
+                              0.03, 0.03, 0.03};
 
     assert(sizeof(refle) == sizeof(photonEnergy1));
 
     // optical surface between crystal and air
     G4MaterialPropertiesTable *cryairsp = new G4MaterialPropertiesTable();
     cryairsp->AddProperty("REFLECTIVITY", photonEnergy1, refle, nEntries1);
-    cryairsp->AddProperty("RINDEX", photonEnergy1, tr, nEntries1);
+    // cryairsp->AddProperty("RINDEX", photonEnergy1, tr, nEntries1);
     cryairsp->AddProperty("SPECULARLOBECONSTANT", photonEnergy1, specularlobe, nEntries1);
     cryairsp->AddProperty("SPECULARSPIKECONSTANT", photonEnergy1, specularspike, nEntries1);
     cryairsp->AddProperty("BACKSCATTERCONSTANT", photonEnergy1, backscatter, nEntries1);
@@ -184,16 +205,16 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     G4OpticalSurface *wlstefSurface = new G4OpticalSurface("WLSTefSurface");
     wlstefSurface->SetType(dielectric_dielectric);
     wlstefSurface->SetModel(unified);
-    wlstefSurface->SetFinish(groundbackpainted);
-    wlstefSurface->SetSigmaAlpha(0.2);
+    wlstefSurface->SetFinish(groundfrontpainted);
+    wlstefSurface->SetSigmaAlpha(0.1);
     wlstefSurface->SetMaterialPropertiesTable(cryairsp);
 
     // optical surface between crystal and WLS
     G4OpticalSurface *crywlsSurface = new G4OpticalSurface("CryWLSSurface");
     crywlsSurface->SetType(dielectric_dielectric);
     crywlsSurface->SetModel(unified);
-    crywlsSurface->SetFinish(ground);
-    crywlsSurface->SetSigmaAlpha(0.2);
+    crywlsSurface->SetFinish(polished);
+    crywlsSurface->SetSigmaAlpha(0.03);
 
     // optical surface between crystal and APD window
     G4OpticalSurface *crywinSurface = new G4OpticalSurface("CryWinSurface");
@@ -203,9 +224,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
     // optical sensitive surface of APD cathode
     G4OpticalSurface *sdSurface = new G4OpticalSurface("SDSurface");
-    sdSurface->SetType(dielectric_dielectric);
-    sdSurface->SetFinish(polishedfrontpainted);
+    sdSurface->SetType(dielectric_metal);
     sdSurface->SetModel(unified);
+    sdSurface->SetFinish(polished);
 
     G4double Efficiency[] = {0.8577, 0.8577, 0.8577, 0.8577, 0.8577, 0.8577, 0.8577, 0.8577, 0.8548, 0.8548, 0.8519, 0.8519,
                              0.8490, 0.8462, 0.8433, 0.8375, 0.8317, 0.8288, 0.8231, 0.8173, 0.8115, 0.8029, 0.7942, 0.7827,
@@ -257,7 +278,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     // detector geometry definition
     //
     G4String crystal_name[3], apd_name[3], cathode_name[3], wls_name[3], teflon_name[3], union_CW_name, union_CWT_name, union_CWTA_name[3];
-    G4String crywls_surname, crywin_surname, wlstef_surname, sd_surname;
+    G4String crywls_surname, cryapd_surname, wlstef_surname, APDSi_surname, sd_surname;
     int i = 0;
     crystal_name[0] = Form("Crystal_sol%1d", i);
     crystal_name[1] = Form("Crystal_log%1d", i);
@@ -279,10 +300,11 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     union_CWTA_name[0] = Form("Detector_sol%1d", i);
     union_CWTA_name[1] = Form("Detector_log%1d", i);
     union_CWTA_name[2] = Form("Detector_phy%1d", i);
-    crywls_surname = Form("CryAirSurface%1d", i);
-    crywin_surname = Form("CrySDSurface%1d", i);
-    wlstef_surname = Form("WLsTefSurface%1d", i);
-    sd_surname = Form("SensitiveDetectorSurface%1d", i);
+    crywls_surname = Form("CryWLSSurface%1d", i);
+    cryapd_surname = Form("CryAPDSurface%1d", i);
+    wlstef_surname = Form("WLSTefSurface%1d", i);
+    APDSi_surname = Form("APDSiSurface%1d", i);
+    // sd_surname = Form("SensitiveDetectorSurface%1d", i);
 
     // definition of solids
     // solid definition of APD and its subcomponents of window and photo-sensitive area
@@ -324,8 +346,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     // definition of optical surfaces
     new G4LogicalBorderSurface(crywls_surname, physCry, physWls, crywlsSurface);
     new G4LogicalBorderSurface(wlstef_surname, physWls, physTef, wlstefSurface);
-    new G4LogicalBorderSurface(crywin_surname, physCry, physApd, crywinSurface);
-    new G4LogicalSkinSurface(sd_surname, logicCathode, sdSurface);
+    new G4LogicalBorderSurface(cryapd_surname, physCry, physApd, crywinSurface);
+    new G4LogicalBorderSurface(APDSi_surname, physApd, physCathode, sdSurface);
+    // new G4LogicalSkinSurface(sd_surname, logicCathode, sdSurface);
 
     return physWorld;
 }

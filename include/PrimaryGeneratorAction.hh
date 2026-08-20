@@ -14,18 +14,18 @@
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
-	public:
-		PrimaryGeneratorAction();
-		virtual ~PrimaryGeneratorAction();
-		virtual void GeneratePrimaries(G4Event*);
-		G4GeneralParticleSource *GetParticleGun(){ return fGParticleSource; };
-		void SetOptPhotonPolar();
-		void GetOptPhotonPolar();
-		void SetOptPhotonPolar(G4double);
+public:
+	PrimaryGeneratorAction();
+	virtual ~PrimaryGeneratorAction();
+	virtual void GeneratePrimaries(G4Event *);
+	G4GeneralParticleSource *GetParticleGun() { return fGParticleSource; };
+	void SetOptPhotonPolar();
+	void GetOptPhotonPolar();
+	void SetOptPhotonPolar(G4double);
 
-	private:
-		G4ParticleGun *fParticleGun;
-		G4GeneralParticleSource *fGParticleSource;
+private:
+	G4ParticleGun *fParticleGun;
+	G4GeneralParticleSource *fGParticleSource;
 };
 
 #endif

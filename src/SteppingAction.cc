@@ -64,8 +64,10 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
   const G4DynamicParticle *particle = aTrack->GetDynamicParticle();
   G4String particleName = particle->GetDefinition()->GetParticleName();
   G4double edep = aStep->GetTotalEnergyDeposit();
-  if (postPhyVolume->GetName().contains("Crystal"))
+  if (postPhyVolume->GetName().contains("Crystal") && aTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
+  {
     fTrackingAction->GetEventAction()->AddEdep(edep);
+  }
 
   //  count for optical photon only
   if (aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
