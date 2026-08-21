@@ -54,5 +54,25 @@ The simulation result is stored event by event in a root file. For each event, w
 -o  &emsp;        Specify the name of output file (default: ECAL.root )\
 -n  &emsp;        Number of threads to use (default: 8 )\
 -op &ensp;        Use PhysicsList with optics\
+-s  &emsp;        Set the random seed\
 -h  &emsp; Print this message and exit 
 1. The simulation result is stored in a root file named `ECAL.root` by default.
+
+## Data analysis
+
+The offline analysis is performed by two standalone tools in the `analysis/` directory.
+
+### GenerateWaveform
+
+Convert the photon time distribution in the simulation output into a digitized waveform, and save it in a root file（`ECAL_withwaveform.root`）.
+```bash
+./GenerateWaveform /path/to/ECAL.root
+```
+
+### FitWaveform
+
+Fit each waveform to extract the hit time and amplitude, and obtains the time resolution from a Gaussian fit of the time distribution. 
+
+```bash
+./FitWaveform /path/to/ECAL_withwaveform.root
+```

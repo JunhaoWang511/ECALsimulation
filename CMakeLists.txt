@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.16...3.21)
 
 project(ECAL)
 
+# 默认 Release 构建（-O3），否则无优化编译会显著拖慢数据分析工具
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 option(WITH_GEANT4_UIVIS "Build with Geant4 UI and Vis drivers" ON)
 if(WITH_GEANT4_UIVIS)
   find_package(Geant4 REQUIRED ui_all vis_all)
@@ -37,3 +42,20 @@ endforeach()
 add_executable(ECAL main.cc ${sources} ${headers})
 target_link_libraries(ECAL ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 install(TARGETS ECAL DESTINATION bin)
+
+# 离线数据分析工具：源码位于 analysis/，cmake 时拷贝到 build/analysis/
+file(GLOB analysis_sources ${PROJECT_SOURCE_DIR}/analysis/*.cpp)
+foreach(_file ${analysis_sources})
+  get_filename_component(_name ${_file} NAME)
+  configure_file(
+    ${_file}
+    ${PROJECT_BINARY_DIR}/analysis/${_name}
+    COPYONLY
+  )
+endforeach()
+
+add_executable(GenerateWaveform ${PROJECT_SOURCE_DIR}/analysis/GenerateWaveform.cpp)
+target_link_libraries(GenerateWaveform ${ROOT_LIBRARIES})
+add_executable(FitWaveform ${PROJECT_SOURCE_DIR}/analysis/FitWaveform.cpp)
+target_link_libraries(FitWaveform ${ROOT_LIBRARIES})
+install(TARGETS GenerateWaveform FitWaveform DESTINATION bin)

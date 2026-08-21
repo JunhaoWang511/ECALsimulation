@@ -1,21 +1,28 @@
 /run/initialize
 
+# 位置分布：
+# 点源
 /gps/pos/type Point
 /gps/pos/centre 0 0 -15 cm
 /gps/direction 0 0 1
+# 平面源
+# /gps/pos/type Plane
+# /gps/pos/shape Square
+# /gps/pos/centre 0 0 -15 cm
+# /gps/pos/halfx 2.5 cm
+# /gps/pos/halfy 2.5 cm
+# /gps/direction 0 0 1
+# 束流源
+#/gps/pos/type Beam
+#/gps/pos/centre 0 0 -15 cm
+#/gps/pos/sigma_x 15 mm
+#/gps/pos/sigma_y 15 mm
+#/gps/direction 0 0 1
 
-/gps/particle mu-
-/gps/energy 3 GeV
-/run/beamOn 500
+#时间分布：
+#粒子枪发射时间0-12.5ns均匀分布
+# /gps/randomTime true
 
-/gps/particle pi-
-/gps/energy 3 GeV
-/run/beamOn 2000
-
-/gps/particle proton
-/gps/energy 2.2 GeV
-/run/beamOn 2000
-
-/gps/particle e-
-/gps/energy 3 GeV
-/run/beamOn 300
+/gps/particle e+
+/gps/energy 1 GeV
+/run/beamOn 10
