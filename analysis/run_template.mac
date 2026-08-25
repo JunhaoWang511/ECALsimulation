@@ -1,0 +1,29 @@
+/run/initialize
+
+# 位置分布：
+# 点源
+/gps/pos/type Point
+/gps/pos/centre 0 0 -15 cm
+/gps/direction 0 0 1
+# 平面源
+# /gps/pos/type Plane
+# /gps/pos/shape Square
+# /gps/pos/centre 0 0 -15 cm
+# /gps/pos/halfx 2.5 cm
+# /gps/pos/halfy 2.5 cm
+# /gps/direction 0 0 1
+# 束流源
+#/gps/pos/type Beam
+#/gps/pos/centre 0 0 -15 cm
+#/gps/pos/sigma_x 15 mm
+#/gps/pos/sigma_y 15 mm
+#/gps/direction 0 0 1
+
+#时间分布：
+#粒子枪发射时间0-12.5ns均匀分布
+/gps/randomTime true
+
+/gps/particle e+
+# 占位符由submit_all.sh替换：@ENERGY@为束流能量(GeV)，@NEVENTS@为单个run的事例数
+/gps/energy @ENERGY@ GeV
+/run/beamOn @NEVENTS@

@@ -47,7 +47,6 @@ TTree *ReadTree(TFile *infile, DATA_STRUCT &Data)
     return tr;
 }
 
-
 void fit_single_waveform(double *wave, double *pars)
 {
     // 拟合结果输出标志，拟合函数形状参数是否固定
@@ -110,7 +109,6 @@ void fit_single_waveform(double *wave, double *pars)
     pars[2] = f->GetChisquare();
 }
 
-
 void fit_waveform(TString filename)
 {
     gStyle->SetOptFit(1111);
@@ -149,7 +147,7 @@ void fit_waveform(TString filename)
     TGraph *calibration_gr = new TGraph();
     TH1D *energy_his = new TH1D("energy_his", "hit energy distribution;energy/MeV;counts", 3000, 0, 3000);
     energy_his->SetDirectory(nullptr);
-    TH1D *time_his = new TH1D("time_his", "hit time distribution;time/ns;counts", 1000, 0, 100);
+    TH1D *time_his = new TH1D("time_his", "hit time distribution;time/ns;counts", 2000, 0, 100);
     time_his->SetDirectory(nullptr);
     TH2D *ET_his = new TH2D("his", "hit energy-hit time;energy/MeV;time/ns", 3000, 0, 3000, 1000, 0, 100);
     ET_his->SetDirectory(nullptr);
@@ -166,7 +164,8 @@ void fit_waveform(TString filename)
 
     for (int i = 0; i < eventNum; i++)
     {
-        std::cout << "Processing " << i << " event." << std::endl;
+        std::cout << "\rProcessing " << i << " events.";
+        std::cout.flush();
         tr->GetEntry(i);
         // 筛选能量沉积占比过半的事例
         // if (Data.EnergyDeposition > 500)
@@ -183,17 +182,16 @@ void fit_waveform(TString filename)
     double sigma_time = time_his->GetRMS();
     time_his->GetXaxis()->SetRangeUser(mean_time - 5 * sigma_time, mean_time + 5 * sigma_time);
     time_his->Draw();
-    time_his->Fit("gaus", "R", "", mean_time - 5 * sigma_time, mean_time + 5 * sigma_time);
+    time_his->Fit("gaus", "QR", "", mean_time - 5 * sigma_time, mean_time + 5 * sigma_time);
     gPad->SaveAs(pngname.Data());
 
-    std::cout << "mean time= " << time_his->GetFunction("gaus")->GetParameter(1) << std::endl;
-    std::cout << "sigma= " << time_his->GetFunction("gaus")->GetParameter(2) << std::endl;
+    std::cout << "time mean= " << time_his->GetFunction("gaus")->GetParameter(1) << " ns" << std::endl;
+    std::cout << "time sigma= " << time_his->GetFunction("gaus")->GetParameter(2) * 1000 << " ps" << std::endl;
 
     infile->Close();
     outfile->Write();
     outfile->Close();
 }
-
 
 int main(int argc, char *argv[])
 {
