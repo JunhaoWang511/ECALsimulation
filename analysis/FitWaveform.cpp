@@ -58,8 +58,8 @@ void fit_single_waveform(double *wave, double *pars)
     int cc = 10, dd = 10;
     static TGraph *gr_wave = new TGraph(100);
     gr_wave->SetTitle("digitized waveform;time/ns;ADC value[AU]");
-    static TF1 *f = new TF1("f", "x>[8] ? [9]*(([0] * exp(-(x-[8]) / [1]) + [2] * exp(-(x-[8]) / [3]) + [4] * exp(-(x-[8]) / [5]) + [6] * exp(-(x-[8]) / [7])) * pow((x-[8]),2)) :0", -100, 1000);
-    double parameters[10] = {0.0263844, 54.6482, -0.0404668, 52.6497, 0.0757371, 44.661, -0.0616601, 43.3916, 65, 1};
+    static TF1 *f = new TF1("f", "x>[9] ? [10]*(([0] * exp(-(x-[9]) / [1]) + [2] * exp(-(x-[9]) / [3]) + [4] * exp(-(x-[9]) / [5]) + [6] * exp(-(x-[9]) / [7])) * pow((x-[9]),[8])) :0", -100, 1000);
+    double parameters[11] = {9.1162e-06, 45.1368, -1.1769e-05, 33.2937, 2.44203e-05, 38.6403, -1.89478e-05, 39.3289, 3.00856, 65, 1};
 
     int MaxID = 0;
     double MaxAmp = 0;
@@ -72,13 +72,13 @@ void fit_single_waveform(double *wave, double *pars)
         }
     }
     // 设置时间参数初值，基于波形峰值位置
-    parameters[8] = 12.5 * (MaxID - 10);
-    parameters[9] = MaxAmp;
+    parameters[9] = 12.5 * (MaxID - 10);
+    parameters[10] = MaxAmp;
     f->SetParameters(parameters);
     // 固定拟合函数的形状参数
     if (fix_shape)
     {
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 9; i++)
         {
             f->FixParameter(i, parameters[i]);
         }
@@ -97,15 +97,15 @@ void fit_single_waveform(double *wave, double *pars)
         gr_wave->Fit(f, "R", "", (MaxID - dd) * 12.5, (MaxID - dd + cc) * 12.5);
         // gr_wave->GetXaxis()->SetRangeUser((MaxID - dd) * 12.5 - 30, (MaxID - dd + cc) * 12.5 + 30);
         gr_wave->Draw("ap");
-        tex->DrawLatex(0.5, 0.6, Form("T=%.2f#pm%.2f", f->GetParameter(8), f->GetParError(8)));
+        tex->DrawLatex(0.5, 0.6, Form("T=%.2f#pm%.2f", f->GetParameter(9), f->GetParError(9)));
         gPad->Update();
         // gPad->SaveAs("digitized_waveform.png");
         sleep(1);
     }
 
-    pars[0] = f->GetParameter(8);
-    // calibrate factor from waveform peak to energy is 0.01652
-    pars[1] = f->GetMaximum() * 0.01652;
+    pars[0] = f->GetParameter(9);
+    // calibrate factor from waveform peak to energy is 0.003827 (ch/MeV)
+    pars[1] = f->GetMaximum() * 0.003827;
     pars[2] = f->GetChisquare();
 }
 
