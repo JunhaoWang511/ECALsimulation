@@ -112,6 +112,7 @@ void fit_single_waveform(double *wave, double *pars)
 void fit_waveform(TString filename)
 {
     gStyle->SetOptFit(1111);
+    gStyle->SetFitFormat("5.3f");
     gStyle->SetTitleFont(42, "XYZ");
     gStyle->SetTitleOffset(0.8, "X");
     gStyle->SetTitleOffset(1.0, "Y");

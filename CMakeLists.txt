@@ -43,37 +43,28 @@ add_executable(ECAL main.cc ${sources} ${headers})
 target_link_libraries(ECAL ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 install(TARGETS ECAL DESTINATION bin)
 
-# 离线数据分析工具：源码位于 analysis/，构建时拷贝到 build/analysis/
-file(GLOB analysis_sources ${PROJECT_SOURCE_DIR}/analysis/*.cpp)
-foreach(_file ${analysis_sources})
-  get_filename_component(_name ${_file} NAME)
-  add_custom_command(
-    OUTPUT ${PROJECT_BINARY_DIR}/analysis/${_name}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_file} ${PROJECT_BINARY_DIR}/analysis/${_name}
-    DEPENDS ${_file}
-    COMMENT "Copying ${_name} to build/analysis/"
-  )
-endforeach()
-add_custom_target(copy_analysis_sources ALL
-  DEPENDS ${PROJECT_BINARY_DIR}/analysis/GenerateWaveform.cpp ${PROJECT_BINARY_DIR}/analysis/FitWaveform.cpp
-)
-
-# 批量数据处理流程脚本（提交/合并/分析）及宏模板：cmake配置期拷贝到 build 根目录
-# 与 run.mac 等宏文件一致，用 configure_file 在 cmake 时拷贝；
-# 不用 add_custom_target（make期拷贝），避免用户删除build下脚本后重新make时被源文件覆盖
-file(GLOB batch_scripts RELATIVE ${PROJECT_SOURCE_DIR}/analysis
+# analysis/ 目录文件拷贝（cmake 配置期）
+file(GLOB analysis_files RELATIVE ${PROJECT_SOURCE_DIR}/analysis
+     ${PROJECT_SOURCE_DIR}/analysis/*.cpp
+     ${PROJECT_SOURCE_DIR}/analysis/*.h
      ${PROJECT_SOURCE_DIR}/analysis/*.sh
      ${PROJECT_SOURCE_DIR}/analysis/*.mac)
-foreach(_file ${batch_scripts})
+foreach(_file ${analysis_files})
+  get_filename_component(_ext ${_file} EXT)
+  if(_ext MATCHES "\\.(cpp|h)$")
+    set(_dest ${PROJECT_BINARY_DIR}/analysis/${_file})
+  else()
+    set(_dest ${PROJECT_BINARY_DIR}/${_file})
+  endif()
   configure_file(
     analysis/${_file}
-    ${PROJECT_BINARY_DIR}/${_file}
+    ${_dest}
     COPYONLY
   )
 endforeach()
 
-add_executable(GenerateWaveform ${PROJECT_SOURCE_DIR}/analysis/GenerateWaveform.cpp)
+add_executable(GenerateWaveform ${PROJECT_BINARY_DIR}/analysis/GenerateWaveform.cpp)
 target_link_libraries(GenerateWaveform ${ROOT_LIBRARIES})
-add_executable(FitWaveform ${PROJECT_SOURCE_DIR}/analysis/FitWaveform.cpp)
+add_executable(FitWaveform ${PROJECT_BINARY_DIR}/analysis/FitWaveform.cpp)
 target_link_libraries(FitWaveform ${ROOT_LIBRARIES})
 install(TARGETS GenerateWaveform FitWaveform DESTINATION bin)
