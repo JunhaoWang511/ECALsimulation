@@ -13,6 +13,8 @@
 #include "G4ios.hh"
 #include "G4GeneralParticleSource.hh"
 
+#include <cmath>
+
 PrimaryGeneratorAction::PrimaryGeneratorAction()
 	: G4VUserPrimaryGeneratorAction(), fGParticleSource(), fParticleGun()
 {
@@ -71,66 +73,78 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 // 			4.4286 * eV};
 
 // 	static G4double crystalEmSpec[nEntries] =
-// 		{
-// 			0.0034, 0.0033, 0.0036,
-// 			0.0029, 0.0047, 0.0046,
-// 			0.0045, 0.0055, 0.0068,
-// 			0.0065, 0.0071, 0.0077,
-// 			0.0085, 0.0087, 0.0103,
-// 			0.0107, 0.0110, 0.0120,
-// 			0.0129, 0.0126, 0.0140,
-// 			0.0144, 0.0134, 0.0124,
-// 			0.0129, 0.0140, 0.0121,
-// 			0.0127, 0.0127, 0.0127,
-// 			0.0155, 0.0182, 0.0272,
-// 			0.0423, 0.0737, 0.1297,
-// 			0.2369, 0.4121, 0.6443,
-// 			0.8914, 1.0000, 0.9236,
-// 			0.7050};
+// 		{0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+// 		 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+// 		 0.0000, 0.0000, 0.0000, 0.0000, 0.0155, 0.0182, 0.0272, 0.0423, 0.0737, 0.1297, 0.2369, 0.4121, 0.6443,
+// 		 0.8914, 1.0000, 0.9236, 0.7050};
 
 // 	//
-// 	// build CDF only once
+// 	// build piecewise-linear PDF and segment CDF only once
+// 	//
+// 	// PDF is linearly interpolated between (photonEnergy[i], crystalEmSpec[i])
+// 	// and (photonEnergy[i+1], crystalEmSpec[i+1]); its integral inside a
+// 	// segment is a quadratic function of t, so the inverse can be solved
+// 	// analytically (continuous energy sampling).
 // 	//
 
 // 	static G4bool initialized = false;
-// 	static G4double cdf[nEntries];
+// 	static G4double segArea[nEntries - 1]; // trapezoid area of each segment
+// 	static G4double segCdf[nEntries - 1];  // cumulative probability up to each segment
+// 	static G4double totalArea = 0.0;
 
 // 	if (!initialized)
 // 	{
-// 		G4double sum = 0.0;
+// 		totalArea = 0.0;
 
-// 		for (int i = 0; i < nEntries; i++)
+// 		for (int i = 0; i < nEntries - 1; i++)
 // 		{
-// 			sum += crystalEmSpec[i];
+// 			G4double dE = photonEnergy[i + 1] - photonEnergy[i];
+// 			segArea[i] = 0.5 * (crystalEmSpec[i] + crystalEmSpec[i + 1]) * dE;
+// 			totalArea += segArea[i];
 // 		}
 
 // 		G4double cumulative = 0.0;
 
-// 		for (int i = 0; i < nEntries; i++)
+// 		for (int i = 0; i < nEntries - 1; i++)
 // 		{
-// 			cumulative += crystalEmSpec[i] / sum;
-// 			cdf[i] = cumulative;
+// 			cumulative += segArea[i] / totalArea;
+// 			segCdf[i] = cumulative;
 // 		}
 
 // 		initialized = true;
 // 	}
 
 // 	//
-// 	// sample energy
+// 	// sample energy: pick segment, then invert the quadratic CDF inside it
 // 	//
 
 // 	G4double r = G4UniformRand();
 
-// 	G4double energy = photonEnergy[nEntries - 1];
+// 	G4int k = 0;
 
-// 	for (int i = 0; i < nEntries; i++)
+// 	while (k < nEntries - 1 && r >= segCdf[k])
 // 	{
-// 		if (r < cdf[i])
-// 		{
-// 			energy = photonEnergy[i];
-// 			break;
-// 		}
+// 		k++;
 // 	}
+
+// 	// guard against floating-point round-off at the last segment
+// 	if (k > nEntries - 2)
+// 	{
+// 		k = nEntries - 2;
+// 	}
+
+// 	// target (unnormalized) area inside segment k
+// 	G4double c = (r - (k > 0 ? segCdf[k - 1] : 0.0)) * totalArea;
+
+// 	G4double dE = photonEnergy[k + 1] - photonEnergy[k];
+// 	G4double p0 = crystalEmSpec[k];
+// 	G4double a = crystalEmSpec[k + 1] - p0; // slope of the linear PDF inside the segment
+
+// 	// exact root of  a*t^2 + 2*p0*t - 2*c/dE = 0  (numerically stable form,
+// 	// denominator is always positive; reduces to t = c/(dE*p0) when a = 0)
+// 	G4double t = 2.0 * c / (dE * (p0 + std::sqrt(p0 * p0 + 2.0 * a * c / dE)));
+
+// 	G4double energy = photonEnergy[k] + t * dE;
 
 // 	//
 // 	// override GPS energy

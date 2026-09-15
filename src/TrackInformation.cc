@@ -28,7 +28,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 TrackInformation::TrackInformation()
-    : fStatus(active), fTime(0) {}
+    : fStatus(active), fTime(0), fReflected(false) {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

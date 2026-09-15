@@ -58,10 +58,14 @@ public:
     // Global life time of an optical photon
     void SetTrackTime(G4double time) { fTime = time; }
     G4double GetTrackTime() { return fTime; }
+    // Whether the photon has been reflected at an optical boundary
+    void SetReflected(G4bool r) { fReflected = r; }
+    G4bool GetReflected() const { return fReflected; }
 
 private:
     int fStatus;
     G4double fTime;
+    G4bool fReflected;
 };
 
 #endif

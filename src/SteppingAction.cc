@@ -11,6 +11,7 @@
 #include "G4ProcessManager.hh"
 #include "G4OpticalPhoton.hh"
 #include "G4OpBoundaryProcess.hh"
+#include "G4VProcess.hh"
 
 SteppingAction::SteppingAction(TrackingAction *aTrackingAction)
     : G4UserSteppingAction(), fTrackingAction(aTrackingAction),
@@ -101,9 +102,14 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
       }
       case Detection:
       {
-        // Ignore Cherenkov photons (directly detected)
-        // if (aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov")
+        // Keep photons that were converted by WLS or reflected at boundaries;
+        // reject photons that hit the APD directly without any reflection.
+        // const G4VProcess *creator = aTrack->GetCreatorProcess();
+        // G4bool isWLSPhoton = (creator && creator->GetProcessName() == "OpWLS");
+        // if (!isWLSPhoton && !trackInfo->GetReflected())
+        // {
         //   return;
+        // }
         assert(postPhyVolume->GetName().contains("Cathode_phy") && aTrack->GetTrackStatus() == fStopAndKill);
         G4double LocalTime = aTrack->GetLocalTime();
         G4double particleKinetic = postStepPoint->GetTotalEnergy();
@@ -115,12 +121,15 @@ void SteppingAction::UserSteppingAction(const G4Step *aStep)
         break;
       }
       case NoRINDEX:
+        break;
       case FresnelReflection:
       case TotalInternalReflection:
       case LambertianReflection:
       case LobeReflection:
       case SpikeReflection:
       case BackScattering:
+        // mark the photon as having been reflected at an optical boundary
+        trackInfo->SetReflected(true);
         break;
       default:
         break;

@@ -51,9 +51,8 @@ void EventAction::BeginOfEventAction(const G4Event *aEvent)
 void EventAction::EndOfEventAction(const G4Event *aEvent)
 {
   G4int evtNb = aEvent->GetEventID();
-  if ((evtNb + 1) % 1 == 0 || fParticleInfo.fDecayChain.length() > 1)
-    G4cout << " end of event " << evtNb << " :" + fParticleInfo.fDecayChain
-           << G4endl;
+  if ((evtNb + 1) % 1 == 0)
+    G4cout << " end of event " << evtNb << G4endl;
   fParticleInfo.fEnergyDeposition = fEdep;
   fParticleInfo.fPhotonGen = fPhotonCount_Scint + fPhotonCount_Ceren;
   fParticleInfo.fPhotonWLS = fWLSGenerationCount;

@@ -58,21 +58,25 @@ The simulation result is stored event by event in a root file. For each event, w
 -h  &emsp; Print this message and exit 
 1. The simulation result is stored in a root file named `ECAL.root` by default.
 
-## Data analysis
+## Data generation and analysis
 
-The offline analysis is performed by two standalone tools in the `analysis/` directory.
+The scripts and tools are provided in the `analysis/` directory and copied to `build/` at cmake time. All commands below are run in the `build/` directory inside the centos7 container.
 
-### GenerateWaveform
+### Single energy point
 
-Convert the photon time distribution in the simulation output into a digitized waveform, and save it in a root file（`ECAL_withwaveform.root`）.
+Modify `run.mac` (particle, energy, position or time distribution) if needed, then:
+
 ```bash
-./GenerateWaveform /path/to/ECAL.root
+./submit.sh                                             # simulate -> ./data/ECAL_1GeVe+/job_*.root
+hadd ecal.root job*.root                             # merge job*.root into ecal.root
+./GenerateWaveform ./data/ECAL_1GeVe+/ecal.root         # convert photon time distribution into waveform
+./FitWaveform ./data/ECAL_1GeVe+/ecal_withwaveform.root # fit waveform -> time and energy
 ```
 
-### FitWaveform
-
-Fit each waveform to extract the hit time and amplitude, and obtains the time resolution from a Gaussian fit of the time distribution. 
+### Batch generation over ten energy points (0.2~3.5 GeV)
 
 ```bash
-./FitWaveform /path/to/ECAL_withwaveform.root
+./submit_batch.sh
+./merge_batch.sh ./data/batch/
+./analysis_batch.sh ./data/batch/   # GenerateWaveform and FitWaveform for every energy point
 ```
